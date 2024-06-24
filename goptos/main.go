@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/goptos/cli/codegen"
-	"github.com/goptos/cli/goesive"
+	"github.com/goptos/cli/goptos/codegen"
+	"github.com/goptos/cli/goptos/goesive"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 
 	flag.Parse()
 
-	if len(os.Args) < 1 {
+	if len(os.Args) < 2 {
 		fmt.Println("expected 'genview' or 'build' or 'serve'")
 		os.Exit(1)
 	}
@@ -38,7 +38,7 @@ func main() {
 		serveCmd.Parse(os.Args[2:])
 		goesive.Serve(*serveDist, *servePort)
 	default:
-		fmt.Println("expected one of 'genview' or 'build' or 'serve'")
+		fmt.Println("expected 'genview' or 'build' or 'serve'")
 		os.Exit(1)
 	}
 }

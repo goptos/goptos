@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/goptos/cli/io"
+	"github.com/goptos/cli/goptos/io"
 
 	"github.com/goptos/ast"
 	"github.com/goptos/lexer"

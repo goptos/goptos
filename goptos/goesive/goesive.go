@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/goptos/cli/io"
+	"github.com/goptos/cli/goptos/io"
 )
 
 func check(e error) {

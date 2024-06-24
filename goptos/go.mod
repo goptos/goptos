@@ -1,4 +1,4 @@
-module github.com/goptos/cli
+module github.com/goptos/cli/goptos
 
 go 1.22.4
 
