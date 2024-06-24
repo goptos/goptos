@@ -1,30 +1,35 @@
-package main
+package goesive
 
 import (
 	b64 "encoding/base64"
-	"flag"
 	"log"
 	"net/http"
 	"os"
-)
 
-var (
-	listen = flag.String("listen", "localhost:8080", "listen address")
-	dir    = flag.String("dir", ".", "directory to serve")
+	"github.com/goptos/cli/io"
 )
 
 func check(e error) {
 	if e != nil {
+		log.Printf("%s", e)
 		panic(e)
 	}
 }
 
-func createFile(filePath string, data string) {
+func copyFile(src string, dst string) {
+	log.Printf("Copying: %q to %q", src, dst)
+	index, err := io.ReadFile(src)
+	check(err)
+	err = io.WriteFile(dst, index)
+	check(err)
+}
+
+func createFile(data string, filePath string) {
 	log.Printf("Checking: %q", filePath)
 	_, err := os.Stat(filePath)
 
 	if !(os.IsNotExist(err)) {
-		log.Printf("Exists: %q", filePath)
+		log.Printf("Already exists: %q", filePath)
 		return
 	}
 
@@ -41,29 +46,17 @@ func createFile(filePath string, data string) {
 	f.Sync()
 }
 
-// func _linkFile(filePath string) {
-// 	destPath := fmt.Sprintf("dist/%s", filePath)
+func Build(dist string) {
+	copyFile("index.html", dist+"/index.html")
+	createFile(dataIndexJs, dist+"/index.js")
+	createFile(dataWasmExec, dist+"/wasm_exec.js")
+}
 
-// 	log.Printf("Checking: %q", destPath)
-// 	_, err := os.Stat(destPath)
-
-// 	if !(os.IsNotExist(err)) {
-// 		log.Printf("Removing: %q", destPath)
-// 		err = os.Remove(destPath)
-// 		check(err)
-// 	}
-
-// 	log.Printf("Linking: %q", destPath)
-// 	err = os.Link(filePath, destPath)
-// 	check(err)
-// }
-
-func main() {
-	createFile("dist/wasm_exec.js", dataWasmExec)
-	createFile("dist/index.js", dataIndexJs)
-	flag.Parse()
-	log.Printf("Listening on http://%s...", *listen)
-	log.Fatal(http.ListenAndServe(*listen, http.FileServer(http.Dir(*dir))))
+func Serve(dist string, port string) {
+	var listen = "localhost:" + port
+	Build(dist)
+	log.Printf("Listening on http://%s...", listen)
+	log.Fatal(http.ListenAndServe(listen, http.FileServer(http.Dir(dist))))
 }
 
 const dataIndexJs string = "Y29uc3QgZ28gPSBuZXcgR28oKTsKCldlYkFzc2VtYmx5Lmluc3RhbnRpYXRlU3RyZWFtaW5nKGZldGNoKCJkaXN0L21haW4ud2FzbSIpLCBnby5pbXBvcnRPYmplY3QpLnRoZW4oYXN5bmMgKHJlc3VsdCkgPT4gewogIGF3YWl0IGdvLnJ1bihyZXN1bHQuaW5zdGFuY2UpOwp9KTs="

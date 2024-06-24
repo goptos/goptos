@@ -37,7 +37,7 @@ func WriteFile(fileName string, lines []string) error {
 	return nil
 }
 
-func ListDirs(dir string) ([]string, error) {
+func ListCompDirs(dir string) ([]string, error) {
 	f, err := os.Open(dir)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func ListDirs(dir string) ([]string, error) {
 	return names, nil
 }
 
-func ListFiles(dirs []string) ([]string, error) {
+func ListCompFiles(dirs []string) ([]string, error) {
 	var names = []string{}
 	for _, dir := range dirs {
 		f, err := os.Open(dir)
