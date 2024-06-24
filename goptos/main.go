@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/goptos/cli/goptos/codegen"
@@ -13,8 +14,8 @@ func main() {
 	var genViewCmd = flag.NewFlagSet("genview", flag.ExitOnError)
 	var genViewSrc = genViewCmd.String("src", ".", "source code directory")
 
-	var buildCmd = flag.NewFlagSet("build", flag.ExitOnError)
-	var buildDist = buildCmd.String("dist", "dist", "directory to serve")
+	var packageCmd = flag.NewFlagSet("package", flag.ExitOnError)
+	var packageDist = packageCmd.String("dist", "dist", "directory to serve")
 
 	var serveCmd = flag.NewFlagSet("serve", flag.ExitOnError)
 	var serveDist = serveCmd.String("dist", "dist", "directory to serve")
@@ -23,22 +24,25 @@ func main() {
 	flag.Parse()
 
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'genview' or 'build' or 'serve'")
+		fmt.Println("expected 'genview' or 'package' or 'serve'")
 		os.Exit(1)
 	}
 
 	switch os.Args[1] {
 	case "genview":
+		log.Printf("generating\n")
 		genViewCmd.Parse(os.Args[2:])
 		codegen.View(*genViewSrc)
-	case "build":
-		buildCmd.Parse(os.Args[2:])
-		goesive.Build(*buildDist)
+	case "package":
+		log.Printf("packaging\n")
+		packageCmd.Parse(os.Args[2:])
+		goesive.Build(*packageDist)
 	case "serve":
+		log.Printf("serving\n")
 		serveCmd.Parse(os.Args[2:])
 		goesive.Serve(*serveDist, *servePort)
 	default:
-		fmt.Println("expected 'genview' or 'build' or 'serve'")
+		fmt.Println("expected 'genview' or 'package' or 'serve'")
 		os.Exit(1)
 	}
 }

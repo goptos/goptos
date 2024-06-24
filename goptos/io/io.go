@@ -70,7 +70,8 @@ func ListCompFiles(dirs []string) ([]string, error) {
 			if v.IsDir() {
 				continue
 			}
-			if v.Name() == strings.Split(dir, "/")[1]+".go" {
+			var splitDirName = strings.Split(dir, "/")
+			if v.Name() == splitDirName[len(splitDirName)-1]+".go" {
 				names = append(names, dir+"/"+v.Name())
 			}
 		}

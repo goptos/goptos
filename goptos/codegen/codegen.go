@@ -2,6 +2,7 @@ package codegen
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/goptos/cli/goptos/io"
@@ -30,26 +31,36 @@ func View(src string) {
 	const codeStartTag = "/* macro:generated:view:start */"
 	const codeEndTag = "/* macro:generated:view:end */"
 
+	var srcDir = src + "/comp"
+
 	// List all dirs in comp directory (we start in src/)
-	dirs, err := io.ListCompDirs(src + "/comp")
+	dirs, err := io.ListCompDirs(srcDir)
 	if err != nil {
-		fmt.Printf("ListDirs() %s\n", err)
+		log.Printf("ListDirs() %s\n", err)
+		return
+	}
+	if len(dirs) < 1 {
+		log.Printf("ListDirs() no directories found in %s\n", srcDir)
 		return
 	}
 
 	// List all files in each dir found
 	files, err := io.ListCompFiles(dirs)
 	if err != nil {
-		fmt.Printf("ListFiles() %s\n", err)
+		log.Printf("ListFiles() %s\n", err)
+		return
+	}
+	if len(files) < 1 {
+		log.Printf("ListFiles() no components found in %s\n", srcDir)
 		return
 	}
 
 	// Process each component file
 	for _, file := range files {
-		fmt.Printf("[%s]\n", file)
+		log.Printf("[%s]\n", file)
 		lines, err := io.ReadFile(file)
 		if err != nil {
-			fmt.Printf("  ReadFile() %s\n", err)
+			log.Printf("  ReadFile() %s\n", err)
 			return
 		}
 
@@ -63,14 +74,14 @@ func View(src string) {
 		// find var (to receive generated code)
 		varLine, err := io.FindTag(varTag, lines)
 		if err != nil {
-			fmt.Printf("  FindTag() %s\n", err)
+			log.Printf("  FindTag() %s\n", err)
 			return
 		}
 
 		// find view template
 		from, to, err = io.FindSection(viewStartTag, viewEndTag, lines)
 		if err != nil {
-			fmt.Printf("  FindSection() %s\n", err)
+			log.Printf("  FindSection() %s\n", err)
 			return
 		}
 
@@ -96,7 +107,7 @@ func View(src string) {
 		// generate go code from template
 		code, err := parser.View(strings.Join(lines[from:to], "\n"))
 		if err != nil {
-			fmt.Printf("  View() %s\n", err)
+			log.Printf("  View() %s\n", err)
 			return
 		}
 
