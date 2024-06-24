@@ -117,7 +117,7 @@ func View(src string) {
 			varTag,
 			*code,
 			codeEndTag)
-		err = io.WriteFile(strings.Split(file, ".")[0]+".go", lines)
+		err = io.WriteFile(file, lines)
 		if err != nil {
 			fmt.Printf("writeFile() %s\n", err)
 			return
