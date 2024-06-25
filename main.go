@@ -10,8 +10,9 @@ import (
 	"github.com/goptos/goptos/project"
 )
 
+const cliVersion = "v0.1.1"
+
 func main() {
-	const cliVersion = "v0.1.0"
 	const msg = "expected 'version' or 'init' or 'genview' or 'package' or 'serve'"
 
 	var initCmd = flag.NewFlagSet("init", flag.ExitOnError)
