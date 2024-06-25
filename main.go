@@ -10,7 +10,7 @@ import (
 	"github.com/goptos/goptos/project"
 )
 
-const cliVersion = "v0.1.1"
+const cliVersion = "v0.1.4"
 
 func main() {
 	const msg = "expected 'version' or 'init' or 'genview' or 'package' or 'serve'"
