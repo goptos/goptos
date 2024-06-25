@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/goptos/goptos/codegen"
@@ -39,19 +38,15 @@ func main() {
 	case "version":
 		fmt.Printf("goptos cli version %s\n", cliVersion)
 	case "init":
-		log.Printf("initialising\n")
 		initCmd.Parse(os.Args[2:])
 		project.Init("goptos", "app", *initVersion)
 	case "genview":
-		log.Printf("generating\n")
 		genViewCmd.Parse(os.Args[2:])
 		codegen.View(*genViewSrc)
 	case "package":
-		log.Printf("packaging\n")
 		packageCmd.Parse(os.Args[2:])
-		goesive.Build(*packageDist)
+		goesive.Pack(*packageDist)
 	case "serve":
-		log.Printf("serving\n")
 		serveCmd.Parse(os.Args[2:])
 		goesive.Serve(*serveDist, *servePort)
 	default:

@@ -41,6 +41,14 @@ func WriteFile(fileName string, lines []string) error {
 	return nil
 }
 
+func WritePath(path string) error {
+	err := os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func ListCompDirs(dir string) ([]string, error) {
 	f, err := os.Open(dir)
 	if err != nil {

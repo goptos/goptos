@@ -16,6 +16,11 @@ func check(e error) {
 	}
 }
 
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	return !(os.IsNotExist(err))
+}
+
 func copyFile(src string, dst string) {
 	log.Printf("Copying: %q to %q", src, dst)
 	index, err := io.ReadFile(src)
@@ -26,9 +31,7 @@ func copyFile(src string, dst string) {
 
 func createFile(data string, filePath string) {
 	log.Printf("Checking: %q", filePath)
-	_, err := os.Stat(filePath)
-
-	if !(os.IsNotExist(err)) {
+	if exists(filePath) {
 		log.Printf("Already exists: %q", filePath)
 		return
 	}
@@ -46,15 +49,27 @@ func createFile(data string, filePath string) {
 	f.Sync()
 }
 
-func Build(dist string) {
-	copyFile("index.html", dist+"/index.html")
+// func createPath(path string) {
+// 	log.Printf("Creating: %q", path)
+// 	err := io.WritePath(path)
+// 	check(err)
+// }
+
+func Pack(dist string) {
+	var wasm = dist + "/main.wasm"
+	log.Printf("Checking: %q", wasm)
+	if !exists(wasm) {
+		log.Fatalf("Cannot package until %q has first been built.", wasm)
+	}
+	log.Printf("Already exists: %q", wasm)
 	createFile(dataIndexJs, dist+"/index.js")
 	createFile(dataWasmExec, dist+"/wasm_exec.js")
+	copyFile("index.html", dist+"/index.html")
 }
 
 func Serve(dist string, port string) {
 	var listen = "localhost:" + port
-	Build(dist)
+	Pack(dist)
 	log.Printf("Listening on http://%s...", listen)
 	log.Fatal(http.ListenAndServe(listen, http.FileServer(http.Dir(dist))))
 }
