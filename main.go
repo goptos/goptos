@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/goptos/cli/goptos/codegen"
-	"github.com/goptos/cli/goptos/goesive"
-	"github.com/goptos/cli/goptos/project"
+	"github.com/goptos/goptos/codegen"
+	"github.com/goptos/goptos/goesive"
+	"github.com/goptos/goptos/project"
 )
 
 func main() {

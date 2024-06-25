@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/goptos/cli/goptos/githubapi"
+	"github.com/goptos/goptos/githubapi"
 )
 
 func untar(dst string, r io.Reader) error {
