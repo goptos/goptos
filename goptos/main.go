@@ -8,9 +8,15 @@ import (
 
 	"github.com/goptos/cli/goptos/codegen"
 	"github.com/goptos/cli/goptos/goesive"
+	"github.com/goptos/cli/goptos/project"
 )
 
 func main() {
+	const msg = "expected 'init' or 'genview' or 'package' or 'serve'"
+
+	var newCmd = flag.NewFlagSet("init", flag.ExitOnError)
+	var newVersion = newCmd.String("version", "latest", "version")
+
 	var genViewCmd = flag.NewFlagSet("genview", flag.ExitOnError)
 	var genViewSrc = genViewCmd.String("src", ".", "source code directory")
 
@@ -24,11 +30,15 @@ func main() {
 	flag.Parse()
 
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'genview' or 'package' or 'serve'")
+		fmt.Println(msg)
 		os.Exit(1)
 	}
 
 	switch os.Args[1] {
+	case "init":
+		log.Printf("initialising\n")
+		newCmd.Parse(os.Args[2:])
+		project.Init("goptos", "app", *newVersion)
 	case "genview":
 		log.Printf("generating\n")
 		genViewCmd.Parse(os.Args[2:])
@@ -42,7 +52,7 @@ func main() {
 		serveCmd.Parse(os.Args[2:])
 		goesive.Serve(*serveDist, *servePort)
 	default:
-		fmt.Println("expected 'genview' or 'package' or 'serve'")
+		fmt.Println(msg)
 		os.Exit(1)
 	}
 }
