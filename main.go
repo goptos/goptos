@@ -12,10 +12,11 @@ import (
 )
 
 func main() {
-	const msg = "expected 'init' or 'genview' or 'package' or 'serve'"
+	const cliVersion = "v0.1.0"
+	const msg = "expected 'version' or 'init' or 'genview' or 'package' or 'serve'"
 
-	var newCmd = flag.NewFlagSet("init", flag.ExitOnError)
-	var newVersion = newCmd.String("version", "latest", "version")
+	var initCmd = flag.NewFlagSet("init", flag.ExitOnError)
+	var initVersion = initCmd.String("version", "latest", "version")
 
 	var genViewCmd = flag.NewFlagSet("genview", flag.ExitOnError)
 	var genViewSrc = genViewCmd.String("src", ".", "source code directory")
@@ -35,10 +36,12 @@ func main() {
 	}
 
 	switch os.Args[1] {
+	case "version":
+		fmt.Printf("goptos cli version %s\n", cliVersion)
 	case "init":
 		log.Printf("initialising\n")
-		newCmd.Parse(os.Args[2:])
-		project.Init("goptos", "app", *newVersion)
+		initCmd.Parse(os.Args[2:])
+		project.Init("goptos", "app", *initVersion)
 	case "genview":
 		log.Printf("generating\n")
 		genViewCmd.Parse(os.Args[2:])
