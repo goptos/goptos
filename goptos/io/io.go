@@ -5,7 +5,11 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/goptos/utils"
 )
+
+var verbose = (*utils.Verbose).New(nil)
 
 func ReadFile(fileName string) ([]string, error) {
 	file, err := os.Open(fileName)
@@ -102,7 +106,7 @@ func FindSection(startTag string, endTag string, lines []string) (int, int, erro
 	var from = 0
 	var hit = false
 	for i, line := range lines {
-		fmt.Printf("%d\t%s\n", i, CleanLine(line))
+		verbose.Printf(4, "%d\t%s\n", i, CleanLine(line))
 		if CleanLine(line) == startTag {
 			if from+1 < len(lines) {
 				from = i + 1
