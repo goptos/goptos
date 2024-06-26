@@ -58,54 +58,23 @@ func createFile(data string, filePath string) {
 // 	check(err)
 // }
 
-func goGen(src string) {
+func goRun(dir string, args ...string) {
 	var HOME = os.Getenv("HOME")
 	var PATH = os.Getenv("PATH")
+	var GOMODCACHE = os.Getenv("GOMODCACHE")
+	var GOPATH = os.Getenv("GOPATH")
 	var GOPTOS_VERBOSE = os.Getenv("GOPTOS_VERBOSE")
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer
-	var cmd = exec.Command("go",
-		"generate",
-		"-v")
+	var cmd = exec.Command(args[0], args[1:]...)
 	cmd.Stderr = &stdErr
 	cmd.Stdout = &stdOut
-	cmd.Dir = src
+	cmd.Dir = dir
 	cmd.Env = []string{
 		"PATH=" + PATH,
 		"HOME=" + HOME,
-		"GOPTOS_VERBOSE=" + GOPTOS_VERBOSE,
-		"GOOS=js",
-		"GOARCH=wasm",
-		"GONOPROXY=github.com/goptos"}
-	err := cmd.Run()
-	log.Printf("%s\n", strings.Join(cmd.Env[1:], " "))
-	log.Printf("%s\n", strings.Join(cmd.Args, " "))
-	if err != nil {
-		log.Printf("%s", stdErr.String())
-		log.Fatal(err)
-	}
-	if stdOut.String() != "" {
-		log.Printf("%s", stdOut.String())
-	}
-}
-
-func goBuild(src string) {
-	var PATH = os.Getenv("PATH")
-	var HOME = os.Getenv("HOME")
-	var GOPTOS_VERBOSE = os.Getenv("GOPTOS_VERBOSE")
-	var stdOut bytes.Buffer
-	var stdErr bytes.Buffer
-	var cmd = exec.Command("go",
-		"build",
-		"-o",
-		"../dist/main.wasm",
-		"main.go")
-	cmd.Stderr = &stdErr
-	cmd.Stdout = &stdOut
-	cmd.Dir = src
-	cmd.Env = []string{
-		"PATH=" + PATH,
-		"HOME=" + HOME,
+		"GOMODCACHE=" + GOMODCACHE,
+		"GOPATH=" + GOPATH,
 		"GOPTOS_VERBOSE=" + GOPTOS_VERBOSE,
 		"GOOS=js",
 		"GOARCH=wasm",
@@ -123,8 +92,8 @@ func goBuild(src string) {
 }
 
 func Build(src string) {
-	goGen(src)
-	goBuild(src)
+	goRun(src, "go", "generate", "-v")
+	goRun(src, "go", "build", "-o", "../dist/main.wasm", "main.go")
 }
 
 func Pack(dist string) {
