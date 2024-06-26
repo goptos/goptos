@@ -118,7 +118,7 @@ func Serve(src string, dist string, port string) {
 	var listen = "localhost:" + port
 	Build(src)
 	Pack(dist)
-	log.Printf("Listening on http://%s...", listen)
+	log.Printf("Listening on http://%s ...", listen)
 	log.Fatal(http.ListenAndServe(listen, http.FileServer(http.Dir(dist))))
 }
 
