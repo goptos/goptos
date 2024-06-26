@@ -61,6 +61,9 @@ func createFile(data string, filePath string) {
 func goRun(dir string, args ...string) {
 	var HOME = os.Getenv("HOME")
 	var PATH = os.Getenv("PATH")
+	var TEMP = os.Getenv("TEMP")
+	var TMP = os.Getenv("TMP")
+	var LOCALAPPDATA = os.Getenv("LOCALAPPDATA")
 	var GOMODCACHE = os.Getenv("GOMODCACHE")
 	var GOPATH = os.Getenv("GOPATH")
 	var GOPTOS_VERBOSE = os.Getenv("GOPTOS_VERBOSE")
@@ -73,15 +76,18 @@ func goRun(dir string, args ...string) {
 	cmd.Env = []string{
 		"PATH=" + PATH,
 		"HOME=" + HOME,
+		"TEMP=" + TEMP,
+		"TMP=" + TMP,
+		"LOCALAPPDATA=" + LOCALAPPDATA,
 		"GOMODCACHE=" + GOMODCACHE,
 		"GOPATH=" + GOPATH,
 		"GOPTOS_VERBOSE=" + GOPTOS_VERBOSE,
 		"GOOS=js",
 		"GOARCH=wasm",
 		"GONOPROXY=github.com/goptos"}
-	err := cmd.Run()
 	log.Printf("%s\n", strings.Join(cmd.Env[1:], " "))
 	log.Printf("%s\n", strings.Join(cmd.Args, " "))
+	err := cmd.Run()
 	if err != nil {
 		log.Printf("%s", stdErr.String())
 		log.Fatal(err)
