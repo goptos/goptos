@@ -1,10 +1,13 @@
 package goesive
 
 import (
+	"bytes"
 	b64 "encoding/base64"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/goptos/goptos/io"
 )
@@ -55,6 +58,75 @@ func createFile(data string, filePath string) {
 // 	check(err)
 // }
 
+func goGen(src string) {
+	var HOME = os.Getenv("HOME")
+	var PATH = os.Getenv("PATH")
+	var GOPTOS_VERBOSE = os.Getenv("GOPTOS_VERBOSE")
+	var stdOut bytes.Buffer
+	var stdErr bytes.Buffer
+	var cmd = exec.Command("go",
+		"generate",
+		"-v")
+	cmd.Stderr = &stdErr
+	cmd.Stdout = &stdOut
+	cmd.Dir = src
+	cmd.Env = []string{
+		"PATH=" + PATH,
+		"HOME=" + HOME,
+		"GOPTOS_VERBOSE=" + GOPTOS_VERBOSE,
+		"GOOS=js",
+		"GOARCH=wasm",
+		"GONOPROXY=github.com/goptos"}
+	err := cmd.Run()
+	log.Printf("%s\n", strings.Join(cmd.Env[1:], " "))
+	log.Printf("%s\n", strings.Join(cmd.Args, " "))
+	if err != nil {
+		log.Printf("%s", stdErr.String())
+		log.Fatal(err)
+	}
+	if stdOut.String() != "" {
+		log.Printf("%s", stdOut.String())
+	}
+}
+
+func goBuild(src string) {
+	var PATH = os.Getenv("PATH")
+	var HOME = os.Getenv("HOME")
+	var GOPTOS_VERBOSE = os.Getenv("GOPTOS_VERBOSE")
+	var stdOut bytes.Buffer
+	var stdErr bytes.Buffer
+	var cmd = exec.Command("go",
+		"build",
+		"-o",
+		"../dist/main.wasm",
+		"main.go")
+	cmd.Stderr = &stdErr
+	cmd.Stdout = &stdOut
+	cmd.Dir = src
+	cmd.Env = []string{
+		"PATH=" + PATH,
+		"HOME=" + HOME,
+		"GOPTOS_VERBOSE=" + GOPTOS_VERBOSE,
+		"GOOS=js",
+		"GOARCH=wasm",
+		"GONOPROXY=github.com/goptos"}
+	err := cmd.Run()
+	log.Printf("%s\n", strings.Join(cmd.Env[1:], " "))
+	log.Printf("%s\n", strings.Join(cmd.Args, " "))
+	if err != nil {
+		log.Printf("%s", stdErr.String())
+		log.Fatal(err)
+	}
+	if stdOut.String() != "" {
+		log.Printf("%s", stdOut.String())
+	}
+}
+
+func Build(src string) {
+	goGen(src)
+	goBuild(src)
+}
+
 func Pack(dist string) {
 	var wasm = dist + "/main.wasm"
 	log.Printf("Checking: %q", wasm)
@@ -67,8 +139,9 @@ func Pack(dist string) {
 	copyFile("index.html", dist+"/index.html")
 }
 
-func Serve(dist string, port string) {
+func Serve(src string, dist string, port string) {
 	var listen = "localhost:" + port
+	Build(src)
 	Pack(dist)
 	log.Printf("Listening on http://%s...", listen)
 	log.Fatal(http.ListenAndServe(listen, http.FileServer(http.Dir(dist))))

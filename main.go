@@ -13,7 +13,7 @@ import (
 const cliVersion = "v0.1.4"
 
 func main() {
-	const msg = "expected 'version' or 'init' or 'genview' or 'package' or 'serve'"
+	const msg = "expected 'version' or 'init' or 'genview' or 'build' or 'package' or 'serve'"
 
 	var initCmd = flag.NewFlagSet("init", flag.ExitOnError)
 	var initVersion = initCmd.String("version", "latest", "version")
@@ -21,11 +21,15 @@ func main() {
 	var genViewCmd = flag.NewFlagSet("genview", flag.ExitOnError)
 	var genViewSrc = genViewCmd.String("src", ".", "source code directory")
 
+	var buildCmd = flag.NewFlagSet("build", flag.ExitOnError)
+	var buildSrc = buildCmd.String("src", "src", "source code directory")
+
 	var packageCmd = flag.NewFlagSet("package", flag.ExitOnError)
-	var packageDist = packageCmd.String("dist", "dist", "directory to serve")
+	var packageDist = packageCmd.String("dist", "dist", "distribution directory")
 
 	var serveCmd = flag.NewFlagSet("serve", flag.ExitOnError)
-	var serveDist = serveCmd.String("dist", "dist", "directory to serve")
+	var serveSrc = serveCmd.String("src", "src", "source code directory")
+	var serveDist = serveCmd.String("dist", "dist", "distribution directory (to serve)")
 	var servePort = serveCmd.String("port", "8080", "port to listen on")
 
 	flag.Parse()
@@ -44,12 +48,15 @@ func main() {
 	case "genview":
 		genViewCmd.Parse(os.Args[2:])
 		codegen.View(*genViewSrc)
+	case "build":
+		buildCmd.Parse(os.Args[2:])
+		goesive.Build(*buildSrc)
 	case "package":
 		packageCmd.Parse(os.Args[2:])
 		goesive.Pack(*packageDist)
 	case "serve":
 		serveCmd.Parse(os.Args[2:])
-		goesive.Serve(*serveDist, *servePort)
+		goesive.Serve(*serveSrc, *serveDist, *servePort)
 	default:
 		fmt.Println(msg)
 		os.Exit(1)
