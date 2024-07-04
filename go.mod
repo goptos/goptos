@@ -2,10 +2,10 @@ module github.com/goptos/goptos
 
 go 1.22.4
 
-require github.com/goptos/stateparser v0.1.0
+require github.com/goptos/stateparser v0.1.1
 
-replace github.com/goptos/stateparser => ../stateparser
+// replace github.com/goptos/stateparser => ../stateparser
 
 require github.com/goptos/utils v0.1.0
 
-replace github.com/goptos/utils => ../utils
+// replace github.com/goptos/utils => ../utils

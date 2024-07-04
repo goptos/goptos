@@ -1,0 +1,4 @@
+github.com/goptos/stateparser v0.1.1 h1:8O2e0W8+1CqzbmHUXe8MifEV0FgXvzdKrUjChW6XeFA=
+github.com/goptos/stateparser v0.1.1/go.mod h1:fMVbQFaWbSyhFxPaZm3QCVLBlSab+r3r4AkqhPpq3b0=
+github.com/goptos/utils v0.1.0 h1:2hqoJhY8uRWOQpIy7OeQXvpobfy73ZVf0MwVGSqjq9s=
+github.com/goptos/utils v0.1.0/go.mod h1:OkMb4LeW1wjYcxDw5HBkzt1H/2njzbtTRChD0FXwm3g=
