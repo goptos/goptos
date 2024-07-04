@@ -6,10 +6,7 @@ import (
 	"strings"
 
 	"github.com/goptos/goptos/io"
-
-	"github.com/goptos/ast"
-	"github.com/goptos/lexer"
-	"github.com/goptos/parser"
+	"github.com/goptos/stateparser"
 )
 
 const (
@@ -20,10 +17,6 @@ const (
 	HtmlDynText   int = 100
 )
 
-type Ast = ast.Ast
-type TokenType = lexer.TokenType
-type Token = lexer.Token
-
 func View(src string) {
 	const varTag = "var view *Elem"
 	const viewStartTag = "/* View"
@@ -32,6 +25,7 @@ func View(src string) {
 	const codeEndTag = "/* macro:generated:view:end */"
 
 	var srcDir = src + "/comp"
+	var parser = stateparser.New()
 
 	// List all dirs in comp directory (we start in src/)
 	dirs, err := io.ListCompDirs(srcDir)
@@ -64,6 +58,14 @@ func View(src string) {
 			return
 		}
 
+		// find var (to determine it's leading white spaces)
+		varLine, err := io.FindTag(varTag, lines)
+		if err != nil {
+			log.Printf("  FindTag() %s\n", err)
+			return
+		}
+		var varBuff = io.GetLeadingWhiteSpace(lines[varLine])
+
 		// remove previous generated code
 		from, to, err := io.FindSection(codeStartTag, codeEndTag, lines)
 		if err == nil {
@@ -71,8 +73,8 @@ func View(src string) {
 			lines[from-1] = varTag
 		}
 
-		// find var (to receive generated code)
-		varLine, err := io.FindTag(varTag, lines)
+		// find var again (to receive generated code)
+		varLine, err = io.FindTag(varTag, lines)
 		if err != nil {
 			log.Printf("  FindTag() %s\n", err)
 			return
@@ -99,24 +101,27 @@ func View(src string) {
 			}
 			if i-1 >= 0 {
 				if io.CleanLine(lines[i-1]) != tmp[1] {
-					lines[i] = "    " + tmp[1] + "\n" + lines[i]
+					lines[i] = io.GetLeadingWhiteSpace(lines[i]) + tmp[1] + "\r\n" + lines[i]
 				}
 			}
 		}
 
 		// generate go code from template
-		code, err := parser.View(strings.Join(lines[from:to], "\n"))
+		err = parser.ParseView(strings.Join(lines[from:to], "\n"))
 		if err != nil {
 			log.Printf("  View() %s\n", err)
 			return
 		}
 
 		// replace var with generated code
-		lines[varLine] = fmt.Sprintf("    %s\n    %s = %s\n    %s",
-			codeStartTag,
-			varTag,
-			*code,
-			codeEndTag)
+		lines[varLine] = fmt.Sprintf("%s\n%s\n%s",
+			varBuff+codeStartTag,
+			varBuff+varTag+" = "+parser.Result,
+			varBuff+codeEndTag)
+
+		// correct file ending line
+		lines[len(lines)-1] = lines[len(lines)-1] + "\r\n"
+
 		err = io.WriteFile(file, lines)
 		if err != nil {
 			fmt.Printf("writeFile() %s\n", err)

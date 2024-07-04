@@ -89,11 +89,12 @@ func goRun(dir string, args ...string) {
 	log.Printf("%s\n", strings.Join(cmd.Args, " "))
 	err := cmd.Run()
 	if err != nil {
-		log.Printf("%s", stdErr.String())
+		log.Printf("stdErr\n%s", stdErr.String())
 		log.Fatal(err)
 	}
 	if stdOut.String() != "" {
-		log.Printf("%s", stdOut.String())
+		log.Printf("stdOut\n%s", stdOut.String())
+		log.Printf("success")
 	}
 }
 

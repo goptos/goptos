@@ -91,10 +91,27 @@ func ListCompFiles(dirs []string) ([]string, error) {
 	return names, nil
 }
 
+// Return the input string without any leading or trailing spaces " " or tabs "\t"
 func CleanLine(line string) string {
 	line = strings.Trim(line, " ")
 	line = strings.Trim(line, "\t")
 	return line
+}
+
+// Return the leading white space of the input string (if it has any spaces " " or tabs "\t")
+func GetLeadingWhiteSpace(line string) string {
+	var buffer = ""
+	for _, char := range line {
+		switch string(char) {
+		case " ":
+			buffer = buffer + " "
+		case "\t":
+			buffer = buffer + "\t"
+		default:
+			return buffer
+		}
+	}
+	return buffer
 }
 
 func FindTag(tag string, lines []string) (int, error) {
