@@ -94,7 +94,7 @@ func goRun(dir string, args ...string) {
 	}
 	if stdOut.String() != "" {
 		log.Printf("stdOut\n%s", stdOut.String())
-		log.Printf("success")
+		log.Printf("")
 	}
 }
 
